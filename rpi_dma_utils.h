@@ -16,7 +16,7 @@
 //
 
 // Raspberry Pi hardware version (0 to 4)
-#define RPI_VERSION     0
+#define RPI_VERSION     4
 
 #if RPI_VERSION == 0
 #define PHYS_REG_BASE   PI_01_REG_BASE
@@ -121,35 +121,46 @@ typedef struct {
         uint32_t uints[32-5];   // Data (108 bytes maximum)
 } VC_MSG __attribute__ ((aligned (16)));
 
-// DMA channels and data requests
-#define DMA_CHAN_A      7
-#define DMA_CHAN_B      8
-#define DMA_CHAN_C      9
-#define DMA_PWM_DREQ    5
-#define DMA_SPI_TX_DREQ 6
-#define DMA_SPI_RX_DREQ 7
+// DMA resgisters for DMA and DMA Lite channels only, for DMA4 see BCM2711 datasheet
+// BCM 2711 (PI4) >> DMA Channels [0..6], DMA Lite channels [7..10], DMA4 channels [11..14]
+// BCM 2835 (PI3) >> DMA Channels [0..6], DMA Lite channels [7..14]
+
+// DMA channels
+#define DMA_CHAN_A      7     // PWM    DMA Lite Channel
+#define DMA_CHAN_B      8     // SPI_RX DMA Lite Channel
+#define DMA_CHAN_C      9     // SPI_TX DMA Lite CHannel
+
+// DMA DREQ values for PERMAP register
+#define DMA_PWM_DREQ    5     // PWM     PERMAP value
+#define DMA_SPI_TX_DREQ 6     // SPI0 TX PERMAP value 
+#define DMA_SPI_RX_DREQ 7     // SPI0 RX PERMAP value
+
+// DMA base address channel 0 to 14
 #define DMA_BASE        (PHYS_REG_BASE + 0x007000)
-// DMA register addresses offset by 0x100 * chan_num
+
+// DMA register addresses offset by 0x100 * chan_num, excpet for DMA channel 15
+// DMA base address channel 15: 0x7EE05000 (valid for BCM2835 & BCM2711)
 #define DMA_CS          0x00
 #define DMA_CONBLK_AD   0x04
 #define DMA_TI          0x08
 #define DMA_SRCE_AD     0x0c
 #define DMA_DEST_AD     0x10
 #define DMA_TXFR_LEN    0x14
-#define DMA_STRIDE      0x18
+#define DMA_STRIDE      0x18             // Not used for DMA Lite channels - set to zero
 #define DMA_NEXTCONBK   0x1c
 #define DMA_DEBUG       0x20
 #define DMA_REG(ch, r)  ((r)==DMA_ENABLE ? DMA_ENABLE : (ch)*0x100+(r))
 #define DMA_ENABLE      0xff0
-// DMA register values
-#define DMA_WAIT_RESP   (1 << 3)
-#define DMA_CB_DEST_INC (1 << 4)
-#define DMA_DEST_DREQ   (1 << 6)
-#define DMA_CB_SRCE_INC (1 << 8)
-#define DMA_SRCE_DREQ   (1 << 10)
+
+// DMA TI register values for DMA Lite
+#define DMA_WAIT_RESP   (1 << 3)         // Wait for the write response to be received before proceeding. This ensuresthat multiple writes cannot get stacked in the AXI buspipeline.
+#define DMA_CB_DEST_INC (1 << 4)         // DEST address increments after each write by 4
+#define DMA_DEST_DREQ   (1 << 6)         // The DREQ selected by PERMAP will gate the DEST writes
+#define DMA_CB_SRCE_INC (1 << 8)         // SRCE address increments after each read by 4
+#define DMA_SRCE_DREQ   (1 << 10)        // The DREQ selected by PERMAP will gate the SRCE reads
 #define DMA_PRIORITY(n) ((n) << 16)
 
-// DMA control block (must be 32-byte aligned)
+// DMA & DMA Lite control block (must be 32-byte / 256-bit aligned)
 typedef struct {
     uint32_t ti,    // Transfer info
         srce_ad,    // Source address
@@ -171,9 +182,24 @@ typedef struct {
 #define PWM_FIF1        0x18   // Channel 1 fifo
 #define PWM_RNG2        0x20   // Channel 2 range
 #define PWM_DAT2        0x24   // Channel 2 data
+
 // PWM register values
-#define PWM_CTL_RPTL1   (1<<2)  // Chan 1: repeat last data when FIFO empty
+#define PWM_CTL_MSEN2   (1<<15) // Chan 2: M/S mode enable
+#define PWM_CTL_USEF2   (1<<13) // Chan 2: use FIFO
+#define PWM_CTL_POLA2   (1<<12)
+#define PWM_CTL_SBIT2   (1<<11)  
+#define PWM_CTL_RPTL2   (1<<10) // Chan 2: repeat last data when FIFO empty 
+#define PWM_CTL_MODE2   (1<<9)  // Chan 2: 1 = serial mode, 0 = PWM mode (default)
+#define PWM_CTL_PWEN2   (1<<8)  // Chan 2: PWM enable
+#define PWM_CTL_MSEN1   (1<<7)  // Chan 1: M/S mode enable
+#define PWM_CTL_CLRF1   (1<<6)  // Clear FIFO
 #define PWM_CTL_USEF1   (1<<5)  // Chan 1: use FIFO
+#define PWM_CTL_POLA1   (1<<4)
+#define PWM_CTL_SBIT1   (1<<3)
+#define PWM_CTL_RPTL1   (1<<2)  // Chan 1: repeat last data when FIFO empty
+#define PWM_CTL_MODE1   (1<<1)  // Chan 1: 1 = serial mode, 0 = PWM mode (default)
+#define PWM_CTL_PWEN1   1       // Chan 1 PWM enable
+
 #define PWM_DMAC_ENAB   (1<<31) // Start PWM DMA
 #define PWM_ENAB        1       // Enable PWM
 #define PWM_PIN         18      // GPIO pin for PWM output

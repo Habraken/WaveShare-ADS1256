@@ -294,11 +294,11 @@ void init_pwm(int freq, int range, int val)
     set_vc_clock(mbox_fd, PWM_CLOCK_ID, freq);
 #else
     int divi=CLOCK_HZ / freq;
-    *REG32(clk_regs, CLK_PWM_CTL) = CLK_PASSWD | (1 << 5);
-    while (*REG32(clk_regs, CLK_PWM_CTL) & (1 << 7)) ;
-    *REG32(clk_regs, CLK_PWM_DIV) = CLK_PASSWD | (divi << 12);
-    *REG32(clk_regs, CLK_PWM_CTL) = CLK_PASSWD | 6 | (1 << 4);
-    while ((*REG32(clk_regs, CLK_PWM_CTL) & (1 << 7)) == 0) ;
+    *REG32(clk_regs, CLK_PWM_CTL) = CLK_PASSWD | (1 << 5);     
+    while (*REG32(clk_regs, CLK_PWM_CTL) & (1 << 7)) ;         
+    *REG32(clk_regs, CLK_PWM_DIV) = CLK_PASSWD | (divi << 12); // set DIV reg
+    *REG32(clk_regs, CLK_PWM_CTL) = CLK_PASSWD | 6 | (1 << 4); 
+    while ((*REG32(clk_regs, CLK_PWM_CTL) & (1 << 7)) == 0) ;   
 #endif
     usleep(100);
     *REG32(pwm_regs, PWM_RNG1) = range;
@@ -312,7 +312,7 @@ void init_pwm(int freq, int range, int val)
 // Start PWM operation
 void start_pwm(void)
 {
-    *REG32(pwm_regs, PWM_CTL) = PWM_CTL_USEF1 | PWM_ENAB;
+    *REG32(pwm_regs, PWM_CTL) = PWM_CTL_USEF1 | PWM_CTL_PWEN1;
 }
 
 // Stop PWM operation
@@ -324,5 +324,4 @@ void stop_pwm(void)
         usleep(100);
     }
 }
-
 // EOF
