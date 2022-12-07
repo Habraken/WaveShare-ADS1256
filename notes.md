@@ -101,7 +101,7 @@ cat /tmp/adc.fifo
 -b = ADC input buffer enabled. When omitted it goes to default = not enabled. 
 The buffer will significantly increase the input impedance of the ADC and can be be modeled as a resistor.
 The effective resistance depends on the data rate.
-At data rates > 1000 S/s this is a minimum of about 10M $\Omega$, for data rate <= 50 S/s this is 80M $\Omega$.[<sup>1</sup>]
+At data rates > 1000 S/s this is a minimum of about 10M $\Omega$, for data rates <= 50 S/s this is 80M $\Omega$.[<sup>1</sup>]
 
 Test with ADC in series with 2 x 10MΩ 0.1% resisters and a 1.000 V voltage source. Below are the different median voltage readings for various settings of -d. The other relevant parameters were: -g 0, -b, -c 1
 
