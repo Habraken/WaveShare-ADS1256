@@ -17,7 +17,7 @@
 // v0.20 JPB 16/11/20 Tidied up for first Github release
 //
 //
-// v0.30 JH  16/09/22 modified for WaveShare's High-Pprecision AD/DA Board
+// v0.30 JH  16/09/22 modified for WaveShare's High-Precision AD/DA Board
 
 #include <stdint.h>
 #include <stdlib.h>
