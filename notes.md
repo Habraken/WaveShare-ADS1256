@@ -226,13 +226,17 @@ The test do show a strong interference signal.
 
 To eliminate the interference a differential setup was created: where the pin diodes arrays were connected in series to two high precisions 0.1% 10M $\Omega$ resistors[<sup>3</sup>] in a "Wheatstone Bridge" fashion[<sup>9</sup>]. A small reverse bias is applied. This bias of 2.5 V ensures that the ADC will always operate at maximum linearity.
 
+![image](./Screenshot%202022-12-05%20at%2019.11.17.png)
+
 The differential setup hopes to eliminate (common mode) interference as well as temperature drift. The original radiometer used the photodiodes in pv mode, this mode is not well documented and the data sheet (see Vishay BPW34[<sup>2</sup>]) shows a lower photo current for a similar illumination.
 
 ## Modeling the BPW34
 
 A model BPW34 based on general information from these sources.[<sup>4</sup>]<sup>,</sup>[<sup>8</sup>]
 
+## First test results with the photo-diode resistor bridge
 
+![image](./Screenshot%202022-12-07%20at%2023.45.39.png)
 
 [<sup>1</sup>]: https://www.ti.com/lit/ds/symlink/ads1256.pdf?ts=1666512818664&ref_url=https%253A%252F%252Fwww.ti.com%252Fproduct%252FADS1256
 
