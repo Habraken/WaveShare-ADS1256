@@ -120,7 +120,7 @@ data rate | U1 median  |  $\sigma$  | R<sub>eff</sub>
 -d =  3   | 0.853077 V | 0.000092 V | 10,359,646 Ω
 
 ### Inportant note
-- When the buffer is enable the voltage on any analog input should not exceed AGND or AVDD - 2 V with respect to AGND. This means for the WaveShare board 0..3V. Exceeding these limits will effect the ADC's performance, especially it's linearity.
+- When the buffer is enable the voltage on any analog input should not exceed AGND or AVDD - 2 V with respect to AGND. This means for the WaveShare board 0..3V. Exceeding these limits will effect the ADC's performance, especially it's linearity[<sup>1</sup>].
 
 - When the buffer in not enabled the voltage on any analog input should not exceed AGND -0.1 V and AVDD + 0.1 V with respect to AGND. 
 
