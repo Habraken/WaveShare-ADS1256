@@ -11,7 +11,16 @@ Jeremy P Bentham, "Raspberry Pi ADC data streaming"
 
 See https://iosoft.blog/streaming-analog-data-raspberry-pi for details.
 
+So far this program has been tested on a RPI4 running Bullseye. However is should work on any RPI. I intend to test it on a RPI 0 and 3 as well. More later...
+
 ## compiling the program
+
+Please do set your type of RPI (0..4) in the top of rpi_dma_utils.h:
+
+``` c
+// Raspberry Pi hardware version (0 to 4)
+#define RPI_VERSION     4
+```
 
 Create the executable from the three files:
 - rpi_adc-stream.c
