@@ -259,6 +259,13 @@ The R<sub>eff</sub> is changed in accordance with the R<sub>eff</sub> of the ADC
 
 For each value of R<sub>eff</sub> the illumination is varied form 0 to 2.5 lux (1V=1LUX)
 
+Step | R<sub>eff</sub> | Plot color
+-----|-----------------|-----------
+@1   | 10M $\Omega$    | green
+@2   | 20M $\Omega$    | blue
+@3   | 40M $\Omega$    | red
+@4   | 80M $\Omega$    | cyan
+
 [<sup>1</sup>]: https://www.ti.com/lit/ds/symlink/ads1256.pdf?ts=1666512818664&ref_url=https%253A%252F%252Fwww.ti.com%252Fproduct%252FADS1256
 
 [<sup>2</sup>]: https://www.vishay.com/docs/81521/bpw34.pdf
