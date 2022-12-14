@@ -247,6 +247,17 @@ A model BPW34 based on general information from these sources.[<sup>4</sup>]<sup
 
 ![image](./Screenshot%202022-12-07%20at%2023.45.39.png)
 
+## LTSpice simulation
+
+Below is an example of a circuit that uses two diodes in the illuminated branch and two diodes in the dark branch. The effect of the additional photo current is refelcted by the factor 2 in the current source. An attempt has been made to model the diode characterisitcs but this is still not very realisitc. The simulation does demonstrate though that the temperature dependece of the photo current has been copensated by the bridge arrangement.
+
+![image] ()
+
+The R<sub>eff</sub> is changed in accordance with the R<sub>eff</sub> of the ADC. See tables above for the R<sub>eff</sub> relation to the smaple rate.
+
+![image] ()
+
+
 [<sup>1</sup>]: https://www.ti.com/lit/ds/symlink/ads1256.pdf?ts=1666512818664&ref_url=https%253A%252F%252Fwww.ti.com%252Fproduct%252FADS1256
 
 [<sup>2</sup>]: https://www.vishay.com/docs/81521/bpw34.pdf
