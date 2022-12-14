@@ -257,6 +257,7 @@ The R<sub>eff</sub> is changed in accordance with the R<sub>eff</sub> of the ADC
 
 ![image](./Screenshot%202022-12-14%20at%2022.48.20.png)
 
+For each value of R<sub>eff</sub> the illumination is varied form 0 to 2.5 lux (1V=1LUX)
 
 [<sup>1</sup>]: https://www.ti.com/lit/ds/symlink/ads1256.pdf?ts=1666512818664&ref_url=https%253A%252F%252Fwww.ti.com%252Fproduct%252FADS1256
 
