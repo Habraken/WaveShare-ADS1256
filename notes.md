@@ -266,6 +266,64 @@ Step | R<sub>eff</sub> | Plot color
 @3   | 40M $\Omega$    | red
 @4   | 80M $\Omega$    | cyan
 
+# A new round of lab testing the designed circuit
+
+This is the diagram of the circuit implemented in the aluminum box, with the Raspberry Pi4 and the WaveShare high precision ADDA board:
+
+![image](./Screenshot%202022-12-23%20at%2000.11.08.png)
+
+Please note: the circuit around the green led has not purpose for the simulations.
+
+The diode model for the BPW34 is not very accurate... but it will do for not. (As the circuit is balanced anyway, all the temperature drift stuff will not have an effect anyway.)
+
+Real lab test results:
+
+Histogram example:
+
+![image](./notes_histogram.png)
+
+Spectrogram example:
+
+![image](./notes_spectrogram.png)
+
+Both plots were created with the data_analysis.ipynb
+
+After the ADC was initialized with the rpi_adc_streaming command:
+```
+rpi_adc_streaming -n 2 -b -g 0 -c 0 -d 2 -s /tmp/adc.fifo
+```
+(2 samples per block, buffer enalble, no gain, diff channel 0, data rate = 2463 S/s, streaming to /tmp/adc.fifo)
+
+The data was then save to the adc_data.csv, which is read by the data_analaysis.ipynb.
+
+To time the measurement sessions (2 seconds) I used the following command (in a separate terminal):
+```
+timeout 2s cat /tmp/adc.fifo > /tmp/adc.data.csv
+```
+
+The signal generate for driving the led was setup as follows: 990mV DC offset with a 660mVpp AC at various frequencies.
+
+To get an idea of the bandwidth of the system I created the following table:
+
+freq [Hz] | ampl [$\mu V$] | comment
+----------|----------------|--------
+200  | 13.9 |
+400  | 6.6  |
+600  | 5.4  |
+800  | 2.5  |
+1000 | 2.7  |
+1200 | 3.0  |
+1400 | 3.9  | @ 1063 Hz
+1600 | 3.6  | @  863 Hz
+1800 | 1.4  | @  663 Hz
+2000 | 2.3  | @  463 Hz
+2200 | 1.0  | @  263 Hz
+
+As you can see there is som aliasing happening... A filter is required.
+
+
+
+
 [<sup>1</sup>]: https://www.ti.com/lit/ds/symlink/ads1256.pdf?ts=1666512818664&ref_url=https%253A%252F%252Fwww.ti.com%252Fproduct%252FADS1256
 
 [<sup>2</sup>]: https://www.vishay.com/docs/81521/bpw34.pdf
