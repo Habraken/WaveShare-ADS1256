@@ -1,6 +1,7 @@
 // Derived from "Raspberry Pi MCP3202 ADC streaming interface"; see https://iosoft.blog for details
 //
 // Copyright (c) 2020 Jeremy P Bentham
+// Copyright (c) 2022 Jan Habraken
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
