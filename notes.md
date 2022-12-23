@@ -272,7 +272,7 @@ This is the diagram of the circuit implemented in the aluminum box, with the Ras
 
 ![image](./Screenshot%202022-12-23%20at%2000.11.08.png)
 
-Please note: the circuit around the green led has no purpose for the simulations, but is show here to describe the lab test setup.
+Please note: the circuit around the green led has no purpose for the simulations, but is shown here to describe the lab test setup.
 
 The diode model for the BPW34 is not very accurate... but it will do for now. (As the circuit is balanced anyway, all the temperature drift stuff will not have an effect anyway, however I would like to get the capacitance and noise contribution accurate.)
 
@@ -292,18 +292,18 @@ After the ADC was initialized with the rpi_adc_streaming command:
 ```
 rpi_adc_streaming -n 2 -b -g 0 -c 0 -d 2 -s /tmp/adc.fifo
 ```
-(2 samples per block, buffer enalbled, no gain, diff channel 0, data rate = 2463 S/s, streaming to /tmp/adc.fifo)
+(2 samples per block, buffer enabled, no gain, diff channel 0, data rate = 2463 S/s, streaming to /tmp/adc.fifo)
 
-The data was then saved to the adc_data.csv, which is read by the data_analaysis.ipynb.
+The data was then saved to the adc_data.csv, which is read by the data_analysis.ipynb.
 
 To time the measurement sessions (2 seconds) I used the following command (in a separate terminal):
 ```
 timeout 2s cat /tmp/adc.fifo > /tmp/adc.data.csv
 ```
 
-The signal generater for driving the led was setup as follows: 990mV DC offset with a 660mVpp AC at various frequencies.
-In this test the led is a 3mm green led that is refelcted of a white sheet of paper on the underside of the lid of the alluminium box.
-A liile shroud is place around the led to avoid direct light hittng the diodes.
+The signal generator for driving the led was setup as follows: 990mV DC offset with a 660mVpp AC at various frequencies.
+In this test the led is a 3mm green led that is reflected of a white sheet of paper on the underside of the lid of the aluminum box.
+A little shroud is place around the led to avoid direct light hitting the diodes.
 
 To get an idea of the bandwidth of the system I created the following table:
 
