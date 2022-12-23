@@ -129,7 +129,7 @@ data rate | U1 median  |  $\sigma$  | R<sub>eff</sub>
 -d =  3   | 0.853077 V | 0.000092 V | 10,359,646 Ω
 
 ### Inportant note
-- When the buffer is enable the voltage on any analog input should not exceed AGND or AVDD - 2 V with respect to AGND. This means for the WaveShare board 0..3V. Exceeding these limits will effect the ADC's performance, especially it's linearity[<sup>1</sup>].
+- When the buffer is enabled the voltage on any analog input should not exceed AGND or AVDD - 2 V with respect to AGND. This means for the WaveShare board 0..3V. Exceeding these limits will effect the ADC's performance, especially it's linearity[<sup>1</sup>].
 
 - When the buffer in not enabled the voltage on any analog input should not exceed AGND -0.1 V and AVDD + 0.1 V with respect to AGND. 
 
@@ -301,7 +301,9 @@ To time the measurement sessions (2 seconds) I used the following command (in a 
 timeout 2s cat /tmp/adc.fifo > /tmp/adc.data.csv
 ```
 
-The signal generate for driving the led was setup as follows: 990mV DC offset with a 660mVpp AC at various frequencies.
+The signal generater for driving the led was setup as follows: 990mV DC offset with a 660mVpp AC at various frequencies.
+In this test the led is a 3mm green led that is refelcted of a white sheet of paper on the underside of the lid of the alluminium box.
+A liile shroud is place around the led to avoid direct light hittng the diodes.
 
 To get an idea of the bandwidth of the system I created the following table:
 
