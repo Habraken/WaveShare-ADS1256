@@ -272,9 +272,9 @@ This is the diagram of the circuit implemented in the aluminum box, with the Ras
 
 ![image](./Screenshot%202022-12-23%20at%2000.11.08.png)
 
-Please note: the circuit around the green led has no purpose for the simulations, but is show here to describe the test setup.
+Please note: the circuit around the green led has no purpose for the simulations, but is show here to describe the lab test setup.
 
-The diode model for the BPW34 is not very accurate... but it will do for now. (As the circuit is balanced anyway, all the temperature drift stuff will not have an effect anyway, however I would like to get the capacitnace and noise contribution accurate.)
+The diode model for the BPW34 is not very accurate... but it will do for now. (As the circuit is balanced anyway, all the temperature drift stuff will not have an effect anyway, however I would like to get the capacitance and noise contribution accurate.)
 
 Real lab test results:
 
@@ -292,9 +292,9 @@ After the ADC was initialized with the rpi_adc_streaming command:
 ```
 rpi_adc_streaming -n 2 -b -g 0 -c 0 -d 2 -s /tmp/adc.fifo
 ```
-(2 samples per block, buffer enalble, no gain, diff channel 0, data rate = 2463 S/s, streaming to /tmp/adc.fifo)
+(2 samples per block, buffer enalbled, no gain, diff channel 0, data rate = 2463 S/s, streaming to /tmp/adc.fifo)
 
-The data was then save to the adc_data.csv, which is read by the data_analaysis.ipynb.
+The data was then saved to the adc_data.csv, which is read by the data_analaysis.ipynb.
 
 To time the measurement sessions (2 seconds) I used the following command (in a separate terminal):
 ```
