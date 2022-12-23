@@ -272,9 +272,9 @@ This is the diagram of the circuit implemented in the aluminum box, with the Ras
 
 ![image](./Screenshot%202022-12-23%20at%2000.11.08.png)
 
-Please note: the circuit around the green led has not purpose for the simulations.
+Please note: the circuit around the green led has no purpose for the simulations, but is show here to describe the test setup.
 
-The diode model for the BPW34 is not very accurate... but it will do for not. (As the circuit is balanced anyway, all the temperature drift stuff will not have an effect anyway.)
+The diode model for the BPW34 is not very accurate... but it will do for now. (As the circuit is balanced anyway, all the temperature drift stuff will not have an effect anyway, however I would like to get the capacitnace and noise contribution accurate.)
 
 Real lab test results:
 
