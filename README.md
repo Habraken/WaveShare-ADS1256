@@ -2,7 +2,7 @@
 
 ## credits
 
-This program is depends on and is derived from an great DMA example by:
+This program depends on and is derived from an great DMA example by:
 Jeremy P Bentham, "Raspberry Pi ADC data streaming".
 
 See https://iosoft.blog/streaming-analog-data-raspberry-pi for details.
