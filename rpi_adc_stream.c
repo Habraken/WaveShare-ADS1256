@@ -47,9 +47,8 @@
 #define ADC_RAW_LEN 3 // used in get_sample method only, not in the DMA method
 
 // Conversion macro's
-#define ADC_VOLTAGE(n) (((n)*5.0) / 8388607.0) // (2^23 - 1) for ADS1256. There is a one LSB error on one half of the scale.
-#define ADC_MILLIVOLTS(n) ((int)((((n)*3300) + 1024) / 2048))
-#define ADC_RAW_VAL(d) (((uint16_t)(d) << 8 | (uint16_t)(d) >> 8) & 0x7ff)
+#define ADC_VREF 2.5
+//#define ADC_VOLTAGE(n) (((n)*2*ADC_VREF) / ((1<<23)-1)) // (2^23 - 1) for ADS1256, valid for PGA=1 aka -g 0
 
 // Non-cached memory size
 #define MAX_SAMPLES 4096
@@ -87,7 +86,7 @@
 #define SPI0_MOSI_PIN 10 // P_MOSI
 #define SPI0_SCLK_PIN 11 // P_SCK
 
-// ADS1256 pin definitions > BCM number, Waveshare board
+// ADS1256 pin definitions > BCM number, WaveShare board
 #define ADC_CE0_PIN 22   // P3
 #define DAC_CE1_PIN 23   // P4
 #define ADC_DRDY_PIN 17  // P0
@@ -168,8 +167,9 @@ int fifo_fd;
 #define FMT_USEC 1
 
 // DMA block timing
+// These block timings are only valid for the RPI4's lowest clock speed
 #define TIME_BLOCK0 32 * 2 // 32 us for TRX of 4 bytes
-#define TIME_BLOCK1 16 * 2 // 16 us to define pauze between TRX's
+#define TIME_BLOCK1 16 * 2 // 16 us to define pause between TRX's
 #define TIME_BLOCK2 32 * 2 // 32 us for TRX of 4 bytes
 #define TIME_BLOCK3 16 * 2 // 16 us to define pulse width for SYNC
 // time_block4 is defined by the ADC settling_time for a given data rate
@@ -206,11 +206,12 @@ void spi_xfer(uint8_t *txd, uint8_t *rxd, int len);
 void reset_adc_hard(void);                                             // hard reset with RST pin of ADS1256
 void reset_adc_soft(void);                                             // soft reset with cmd over spi
 void init_adc(uint8_t drate, uint8_t pga, uint8_t bufen, uint8_t mux); // init ADS1256
-void self_cal_adc(void);                                               // self calibrate ADS1256
+void self_cal_adc(void);                                               // self calibrate cmd ADS1256
 void spi_disable(void);
 void disp_spi(void); // display current spi registers
 void disp_adc(void); // display current adc registers
-void conversion_test(void);
+double adc_voltage(int32_t n, uint8_t pga);
+void conversion_test(uint8_t pga);
 
 typedef struct
 {
@@ -368,6 +369,7 @@ int main(int argc, char *argv[])
     reset_adc_hard();
     init_adc(drate, pga, bufen, mux);
     disp_adc();
+    conversion_test(pga);
     self_cal_adc();
     if (testmode)
     {
@@ -388,16 +390,16 @@ int main(int argc, char *argv[])
         val = adc_get_sample(0x23);
         usleep(1000);
         val = adc_get_sample(0x45);
-        printf("0x01 ADC value = %08X = % 9d = % 1.9fV\n", val, val, ADC_VOLTAGE(val));
+        printf("0x01 ADC value = %08X = % 9d = % 1.9fV\n", val, val, adc_voltage(val, pga));
         usleep(1000);
         val = adc_get_sample(0x67);
-        printf("0x23 ADC value = %08X = % 9d = % 1.9fV\n", val, val, ADC_VOLTAGE(val));
+        printf("0x23 ADC value = %08X = % 9d = % 1.9fV\n", val, val, adc_voltage(val, pga));
         usleep(1000);
         val = adc_get_sample(0x01);
-        printf("0x45 ADC value = %08X = % 9d = % 1.9fV\n", val, val, ADC_VOLTAGE(val));
+        printf("0x45 ADC value = %08X = % 9d = % 1.9fV\n", val, val, adc_voltage(val, pga));
         usleep(1000);
         val = adc_get_sample(0x23);
-        printf("0x67 ADC value = %08X = % 9d = % 1.9fV\n", val, val, ADC_VOLTAGE(val));
+        printf("0x67 ADC value = %08X = % 9d = % 1.9fV\n", val, val, adc_voltage(val, pga));
         usleep(1000);
         // disp_adc();
     }
@@ -739,7 +741,7 @@ int adc_stream_csv(MEM_MAP *mp, char *vals, int maxlen, int nsamp)
                     {
                         val[i] = (*(((uint8_t *)rx_buff) + i + 0) & 0x80 ? 0xFF : 0x00) << 24 | *(((uint8_t *)rx_buff) + i + 0) << 16 | *(((uint8_t *)rx_buff) + i + 1) << 8 | *(((uint8_t *)rx_buff) + i + 2); // convert 3 bytes rx data to 32 bit int
                     }
-                    slen += sprintf(&vals[slen], "%s % 1.9f", slen ? "," : "", (double)ADC_VOLTAGE(val[i]));
+                    slen += sprintf(&vals[slen], "%s % 1.9f", slen ? "," : "", adc_voltage(val[i],pga));
                 }
                 slen += sprintf(&vals[slen], "\n");
                 
@@ -988,20 +990,28 @@ void reset_adc_hard(void)
 }
 
 // Testing conversion arithmatic
-void conversion_test(void)
+void conversion_test(uint8_t pga)
 {
     int32_t val;
+    int gain;
+    gain = (pga == 0 ? 1 : 1 << pga);
     uint8_t data[5][3] = {{0x80, 0x00, 0x00},
                           {0xFF, 0xFF, 0xFF},
                           {0x00, 0x00, 0x00},
                           {0x00, 0x00, 0x01},
                           {0x7F, 0xFF, 0xFF}};
-    printf("\n Conversion Test \n");
+    printf("Conversion Test (PGA=%d, gain=%d)\n", pga, gain);
     for (int i = 0; i < 5; i++)
     {
         val = (data[i][0] & 0x80 ? 0xFF : 0x00) << 24 | data[i][0] << 16 | data[i][1] << 8 | data[i][2];
-        printf("%08X, % d \n", val, val);
+        printf("%08X, % 9d,  % 1.9f \n", val, val, adc_voltage(val,pga));
     }
     printf("\n");
+}
+double adc_voltage(int32_t n, uint8_t pga)
+{
+    double val;
+    val = n * (2 * ADC_VREF / (((1<<23)-1) * (pga==0 ? 1 : 1 << pga)));
+    return val;
 }
 // EOF

@@ -67,7 +67,7 @@ The output should look like this:
 
 ```
 RPi ADC streamer v0.30
-VC mem handle 12, phys 0xbe3f5000, virt 0xb6f37000
+VC mem handle 11, phys 0xbebc6000, virt 0xb6f75000
 frequency: 1886792, divider: 106 
 
 ADS1256 register data:
@@ -76,12 +76,19 @@ MUX    0x01
 ADCON  0x20 
 DRATE  0xF0 
 IO     0xE1 
-OFC0   0xF6 
-OFC1   0x03 
-OFC2   0x00 
-FSC0   0x5E 
-FSC1   0x0A 
+OFC0   0x10 
+OFC1   0xF7 
+OFC2   0xFF 
+FSC0   0xB4 
+FSC1   0x19 
 FSC2   0x45 
+
+Conversion Test (PGA=0, gain=1)
+FF800000,  -8388608,  -5.000000596 
+FFFFFFFF,        -1,  -0.000000596 
+00000000,         0,   0.000000000 
+00000001,         1,   0.000000596 
+007FFFFF,   8388607,   5.000000000 
 
 Testing 1.887 MHz SPI frequency:   1.882 MHz
 Testing  3267 Hz  PWM frequency: 3267.974 Hz
@@ -136,18 +143,17 @@ data rate | U1 median  |  $\sigma$  | R<sub>eff</sub>
 -f 1 = enable time stamps, when omitted no time stamps are written to fifo. 1 is the only option.
 
 -g [0..6] = Programmable Gain Amplifier (PGA) setting. 
-0 = default. PGA is programmed in the lower 3 bits of the ADCON register of the ADC.
+0 = default. PGA is programmed in the lower 3 bits of the ADCON register of the ADC. The output is scaled according to the gain setting.
 
- Value | Binary | Gain  
--------|--------|------
- 0 | 0b000 | 1 (default) 
- 1 | 0b001 | 2            
- 2 | 0b010 | 4            
- 3 | 0b011 | 8  
- 4 | 0b100 | 16 
- 5 | 0b101 | 32 
- 6 | 0b110 | 64
- 7 | 0b111 | 64
+ Value | Binary | Gain   | FSR (Full Scale Range) 
+-------|--------|--------|-----
+ 0 | 0b000 | 1 (default) | ± 5 V
+ 1 | 0b001 | 2           | ± 2.5 V
+ 2 | 0b010 | 4           | ± 1.25 V
+ 3 | 0b011 | 8           | ± 0.625 V
+ 4 | 0b100 | 16          | ± 0.3125 V
+ 5 | 0b101 | 32          | ± 0.15625 V
+ 6 | 0b11x | 64          | ± 0.078125 V
 
 -c [0..11] = ADC channel selector. Table for valid channel numbers
 
