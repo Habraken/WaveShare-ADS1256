@@ -35,21 +35,23 @@ gcc -Wall -g -o rpi_adc_stream rpi_adc_stream.c rpi_dma_utils.c
 
 ## pre-requisites
 
-For this program to work correctly the the cpu frequency of the RPI needs to be fixed, as DMA is used to drive the SPI bus and GPIO. A varying RPI clock frequency will alter the timing of the SPI bus and GPIO signals that control the ADS1256.
+For this program to work correctly the the cpu frequency of the RPI needs to be fixed, as DMA is used to drive the SPI bus and GPIO. A varying RPI clock frequency will alter the timing of the SPI bus and GPIO signals that control the ADS1256 and render communication with the ADS1256 impossible. Needless to say there should be no other device using the SPI bus and it might be a good idea to disable the SPI bus in the raspi-config.
 
-for that you need to install the cpufrequtils if not already present:
+The cpu frequency is normally controlled by the OS and is scaled up and down based on the workload. You can also instruct the OS not to do this. For that you need to install the cpufrequtils if not already present:
 
 ```
 sudo apt install cpufrequtils
 ```
 
-The to set the RPI freq to it's lowest state run:
+once installed, you can use the commands below:
+
+- to set the RPI freq to it's lowest state run:
 
 ```
 sudo cpufreq-set -g powersave
 ```
 
-When you are done you can restore the RPI to it's default state with:
+- when you are done you can restore the RPI to it's default state with:
 
 ```
 sudo cpufreq-set -g ondemand
@@ -94,6 +96,8 @@ Testing 1.887 MHz SPI frequency:   1.882 MHz
 Testing  3267 Hz  PWM frequency: 3267.974 Hz
 Closing
 ```
+If the ADS1256 register data is only showing 0x00 values, than this is an indication that there is a problem with the ADS1256. Did you forget to run the ```sudo cpufreq-set -g powersave``` command?
+
 ## basic usage
 
 ```
@@ -116,7 +120,7 @@ cat /tmp/adc.fifo
 
 -b = ADC input buffer enabled. When omitted it goes to default = not enabled. 
 The buffer will significantly increase the input impedance of the ADC and can be be modeled as a resistor.
-The effective resistance depends on the data rate.
+The effective impedance (resistive) depends on the data rate.
 At data rates > 1000 S/s this is a minimum of about 10M $\Omega$, for data rates <= 50 S/s this is 80M $\Omega$.[<sup>1</sup>]
 
 Test with ADC in series with 2 x 10MΩ 0.1% resisters and a 2.500 V voltage source. Below are the different median voltage readings for various settings of -d. The other relevant parameters were: -g 0, -b, -c 1
@@ -135,12 +139,14 @@ data rate | U1 median  |  $\sigma$  | R<sub>eff</sub>
 -d =  5   | 1.264918 V | 0.000184 V | 20,483,142 Ω
 -d =  3   | 0.853077 V | 0.000092 V | 10,359,646 Ω
 
-### Inportant note
+### Important things to note
 - When the buffer is enabled the voltage on any analog input should not exceed AGND or AVDD - 2 V with respect to AGND. This means for the WaveShare board 0..3V. Exceeding these limits will effect the ADC's performance, especially it's linearity[<sup>1</sup>].
 
-- When the buffer in not enabled the voltage on any analog input should not exceed AGND -0.1 V and AVDD + 0.1 V with respect to AGND. 
+- When the buffer in not enabled the voltage on any analog input should not exceed AGND -0.1 V and AVDD + 0.1 V with respect to AGND[<sup>1</sup>].
 
--f 1 = enable time stamps, when omitted no time stamps are written to fifo. 1 is the only option.
+- If the buffer is not enabled (default) then the input impedance doesn't depend on the data rate, but on the gain (PGA) setting -g. (See below.) For -g = [0..4] (= PGA [1..16]) the impedance = 150kΩ/PGA. For -g = [5, 6] (= PGA [32, 64]) the impedance is 4.7kΩ[<sup>1</sup>].
+
+- And finally on the WaveShare board, each of the analog inputs pins is preceded by a RC low pass filter consisting of a 1kΩ resistor and a 100nF capacitor[<sup>10</sup>]. The cutoff or corner frequency of this filter is therefore influenced either by enabling the buffer and the data rate or if the buffer is disabled by the PGA setting.  
 
 -g [0..6] = Programmable Gain Amplifier (PGA) setting. 
 0 = default. PGA is programmed in the lower 3 bits of the ADCON register of the ADC. The output is scaled according to the gain setting.
@@ -154,6 +160,8 @@ data rate | U1 median  |  $\sigma$  | R<sub>eff</sub>
  4 | 0b100 | 16          | ± 0.3125 V
  5 | 0b101 | 32          | ± 0.15625 V
  6 | 0b11x | 64          | ± 0.078125 V
+
+-f 1 = enable time stamps, when omitted no time stamps are written to fifo. 1 is the only option and it shows the number of microseconds passed since the start of the capture. If you intend to analyze the data by using the data_analysis.ipynb Jupyter Notebook, you should omit this command argument as the the notebook can not (yet) process and use the timestamps. 
 
 -c [0..11] = ADC channel selector. Table for valid channel numbers
 
@@ -350,6 +358,7 @@ As you can see there is som aliasing happening... A filter is required.
 
 [<sup>9</sup>]: https://www.ti.com/lit/an/sbaa532/sbaa532.pdf?ts=1670166223461&ref_url=https%253A%252F%252Fwww.google.com%252F
 
+[<sup>10</sup>]: https://www.waveshare.com/w/upload/2/29/High-Precision-AD-DA-board.pdf
 
 
 
