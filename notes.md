@@ -59,7 +59,9 @@ sudo cpufreq-set -g powersave
 sudo cpufreq-set -g ondemand
 ```
 
+
 ---
+
 
 ## first test
 
@@ -118,7 +120,9 @@ In a separate terminal you can view the output with
 cat /tmp/adc.fifo
 ```
 
+
 ---
+
 
 ## command arguments
 
@@ -192,7 +196,9 @@ The current version can only handle a singe channel at a time.
 
 The table above reflects the parameters of the ADC. The actual sample or data rate is in reality lower due to communication overhead.
 
+
 ---
+
 
 ## ADC input impedance verification test
 
