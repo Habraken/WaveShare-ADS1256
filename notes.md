@@ -123,6 +123,8 @@ The buffer will significantly increase the input impedance of the ADC and can be
 The effective impedance (resistive) depends on the data rate.
 At data rates > 1000 S/s this is a minimum of about 10M $\Omega$, for data rates <= 50 S/s this is 80M $\Omega$.[<sup>1</sup>]
 
+### Buffer = on
+
 Test with ADC in series with 2 x 10MΩ 0.1% resisters and a 2.500 V voltage source. Below are the different median voltage readings for various settings of -d. The other relevant parameters were: -g 0, -b, -c 1
 
 U2     = 2.500 V   
@@ -131,7 +133,7 @@ R1, R2 =  10e6 Ω (0.1%)
 R<sub>eff</sub>(U1)  =  U1/((U2-U1)/(R1+R2))  
 R<sub>eff</sub> => (U1xR1 + U1xR2)/(U2 - U1)
 
-data rate | U1 median  |  $\sigma$  | R<sub>eff</sub>
+data rate | U1 median  | U1 $\sigma$| R<sub>eff</sub>
 ----------|------------|------------|----------------
 -d = 11   | 2.010486 V | 0.000283 V | 82,142,124 Ω
 -d =  9   | 2.009339 V | 0.000317 V | 81,903,350 Ω
@@ -139,10 +141,51 @@ data rate | U1 median  |  $\sigma$  | R<sub>eff</sub>
 -d =  5   | 1.264918 V | 0.000184 V | 20,483,142 Ω
 -d =  3   | 0.853077 V | 0.000092 V | 10,359,646 Ω
 
-### Important things to note
+### Buffer = off (default)
+
+Test with ADC in series with 2 x 10kΩ 1% resisters and a 2.500 V voltage source. Below are the different median voltage readings for various settings of -g. The other relevant parameters were: -d 7, -b, -c 2 (I do choose a different channel, as the differential channel between in AIN4 and AIN5 seems to be a little less noisier.)
+
+U2   = 0.250 V  
+R1   = 11.12e3 Ω #10.12k + 1k on the WaveShare board  
+R2   = 11.09e3 Ω #10.09k + 1k on the WaveShare board  
+R<sub>eff</sub>(U1)  =  U1/((U2-U1)/(R1+R2))  
+R<sub>eff</sub> => (U1*R1 + U1*R2)/(U2 - U1)  
+### Expectations
+
+For PGA settings between from 1 to 16] we expect:  
+Vexp(PGA) = U2 / (R1+(150kohm/PGA)+R2) * (150kohm/PGA):  
+Vexp( 1) in V => 0.217757 V  
+Vexp( 2) in V => 0.192881 V  
+Vexp( 4) in V => 0.157009 V  
+Vexp( 8) in V => 0.114441 V  
+Vexp(16) in V => 0.074205 V  
+
+For PGA settings 32 and 64 we expect:  
+Vexp(PGA) = U2 / (R1+(4.7kohm)+R2) * (4.7kohm)  
+Vexp(32) in V => 0.043664 V  
+Vexp(64) in V => 0.043664 V  
+
+### Results
+
+d=7 is 97 S/s, 100s measurement, gives about 9700 samples. 
+U2 voltage source: 0.250 V DC.
+  -g (PGA)  |  U1 $\mu$  | U1 $\sigma$| R<sub>eff</sub>
+------------|------------|------------|----------------
+-g = 0 ( 1) | 0.21909 V  |  0.120 mV  | 157,424.422517Ω
+-g = 1 ( 2) | 0.19474 V  |  0.096 mV  | 78,269.551212Ω
+-g = 2 ( 4) | 0.16178 V  |  0.073 mV  | 40,729.242802Ω
+-g = 3 ( 8) | 0.12074 V  |  0.049 mV  | 20,746.057558Ω
+-g = 4 (16) | 0.08017 V  |  0.032 mV  | 10,484.459165Ω
+-g = 5 (32) | 0.04769 V  |  0.019 mV  | 5,235.504424Ω
+-g = 6 (64) | 0.04762 V  |  0.019 mV  | 5,226.011464Ω
+
+### Conclusion
+All the test data fit well with the data sheet.
+
+### A few important things to note
 - When the buffer is enabled the voltage on any analog input should not exceed AGND or AVDD - 2 V with respect to AGND. This means for the WaveShare board 0..3V. Exceeding these limits will effect the ADC's performance, especially it's linearity[<sup>1</sup>].
 
-- When the buffer in not enabled the voltage on any analog input should not exceed AGND -0.1 V and AVDD + 0.1 V with respect to AGND[<sup>1</sup>].
+- When the buffer is not enabled the voltage on any analog input should not exceed AGND -0.1 V and AVDD + 0.1 V with respect to AGND[<sup>1</sup>].
 
 - If the buffer is not enabled (default) then the input impedance doesn't depend on the data rate, but on the gain (PGA) setting -g. (See below.) For -g = [0..4] (= PGA [1..16]) the impedance = 150kΩ/PGA. For -g = [5, 6] (= PGA [32, 64]) the impedance is 4.7kΩ[<sup>1</sup>].
 
