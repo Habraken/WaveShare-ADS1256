@@ -382,7 +382,7 @@ A little shroud is place around the led to avoid direct light hitting the diodes
 
 To get an idea of the bandwidth of the system I created the following table:
 
-freq [Hz] | ampl [ $\mu$ V] | comment
+freq [Hz] | ampl [uV] | comment
 ----------|----------------|--------
 200  | 13.9 |
 400  | 6.6  |
