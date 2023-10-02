@@ -107,7 +107,7 @@ If the ADS1256 register data is only showing 0x00 values, than this is an indica
 ## basic usage
 
 ```
-sudo rpi-adc_stream -f 1 -n 2 -v -s /tmp/adc.fifo
+sudo rpi_adc_stream -f 1 -n 2 -v -s /tmp/adc.fifo
 ```
 -f 1 = output timestamps
 -n 2 = output 2 samples
